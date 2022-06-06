@@ -1,5 +1,9 @@
-# Import statements
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import os
+import sys
+import argparse
 
 from pymatgen.io.cif import CifWriter 
 from pymatgen.ext.matproj import MPRester
@@ -72,12 +76,23 @@ def defective_structure(defect_objects,Write=bool):
 
 def main():
     m = MPRester("WqTnpNOkd157DcJt")
-    material_composition = "Li7La3Hf2O12"
-    defect_element = "Li"
-    structs = m.get_data(material_composition, prop="structure")
+
+    parser = argparse.ArgumentParser(
+        "Defect creator", description="Generate Defect structures for given material and point defect "
+    )
+    parser.add_argument("material_composition", help="Enter the chemical formula.", type=str)
+    parser.add_argument("point_defect", help="Enter molecule.", type=str)
+    args = parser.parse_args()
+
+    #material_composition = "Li7La3Hf2O12"
+    #defect_element = "Li"
+
+    structs = m.get_data(args.material_composition, prop="structure")
     material=structs[0]['structure']
-    defects = gen_vacancy(material,'defect_element')
+    defects = gen_vacancy(material,args.point_defect)
     defective_structure(defects,True)
+
+
 
     
 if __name__ == "__main__":

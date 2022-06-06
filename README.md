@@ -18,3 +18,15 @@ $source defectgen/bin/activate
 3. Install the dependencies
 
 pip install -r requirement.txt 
+
+4. Usage: python3 main.py material_composition point_defect
+
+Generate Defect structures for given material and point defect
+
+positional arguments:
+  material_composition  Enter the chemical formula.
+  point_defect          Enter molecule.
+
+optional arguments:
+  -h, --help            show this help message and exit
+

@@ -9,7 +9,7 @@ from pymatgen.io.cif import CifWriter
 from pymatgen.ext.matproj import MPRester
 from pymatgen.core import Structure, Lattice, Molecule
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-from pymatgen.analysis.defects.generators import DefectGenerator, InterstitialGenerator, VacancyGenerator
+from pymatgen.analysis.defects.generators import DefectGenerator,VoronoiInterstitialGenerator, InterstitialGenerator, VacancyGenerator
 
 #from matplotlib import pyplot as plt
 #%matplotlib inline
@@ -43,7 +43,25 @@ def gen_vacancy(structure,element):
 
     return defects
 
+def gen_interstitial(structure,element):
+    '''
+    function to generate a list of structures with vacancies
+    input --> pristine structure (pymaatgen structure), element to be removed (str)
+    output --> list of unique defect objects (list)
+    '''
+    defects = [defect for defect in InterstitialGenerator(structure,element)]
 
+    return defects
+
+def gen_voronoi_interstitial(structure,element):
+    '''
+    function to generate a list of structures with vacancies
+    input --> pristine structure (pymaatgen structure), element to be removed (str)
+    output --> list of unique defect objects (list)
+    '''
+    defects = [defect for defect in VoronoiInterstitialGenerator(structure, element)]
+
+    return defects
 
 
 def defective_structure(defect_objects,Write=bool):
@@ -81,7 +99,8 @@ def main():
         "Defect creator", description="Generate Defect structures for given material and point defect "
     )
     parser.add_argument("material_composition", help="Enter the chemical formula.", type=str)
-    parser.add_argument("point_defect", help="Enter molecule.", type=str)
+    parser.add_argument("defect_type", help="Currently support vacancy and interstitial.", type=str)
+    parser.add_argument("point_defect", help="Enter element type", type=str)
     args = parser.parse_args()
 
     #material_composition = "Li7La3Hf2O12"
@@ -89,7 +108,12 @@ def main():
 
     structs = m.get_data(args.material_composition, prop="structure")
     material=structs[0]['structure']
-    defects = gen_vacancy(material,args.point_defect)
+
+    if(args.defect_type=="vacancy"):
+        defects = gen_vacancy(material,args.point_defect)
+    elif(args.defect_type=="interstitial"):
+        defects = gen_voronoi_interstitial(material,args.point_defect)
+
     defective_structure(defects,True)
 
 
